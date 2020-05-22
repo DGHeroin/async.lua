@@ -20,4 +20,22 @@ function async.next( n )
     if n then n() end
 end
 
+function async.waterfall(tasks, cb)
+    local nextArg = {}
+
+    for i, v in pairs(tasks) do
+        local error = nil
+        v(function(err, ...)
+            local arg = {...}
+            nextArg = arg;
+            if err then
+                error = err
+            end
+        end, unpack(nextArg))
+        if error then return cb(error) end
+    end
+    cb(nil, unpack(nextArg))
+end
+
+
 return async
