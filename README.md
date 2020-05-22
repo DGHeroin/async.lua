@@ -1,12 +1,11 @@
 # async.lua
-
-# async.call
 ### 为什么要用async.lua (why you need async.lua)
 
 你可以使用async.lua来管理回调函数, 避免在callback hell里沉沦, 减少心智负担.
 
 You can use async.lua to manage your callback functions, avoid sinking in callback hell, and reduce mental burden.
 
+# async.call
 ### 构建一个调用序列 (make a call sequence)
 ```
 async.call(
