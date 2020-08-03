@@ -58,5 +58,6 @@ async.waterfall({
         else
             print(result)
         end
-end)
+    end
+)
 ```
