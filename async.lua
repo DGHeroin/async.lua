@@ -3,42 +3,33 @@
 
 local async = {}
 local unpack = unpack or table.unpack
-function async.call( ... )
-    local async_context = {}
-    local objs = {...}
-    local next
-    next = function()
-        if #objs > 0 then
-            local caller = objs[1]
-            table.remove(objs, 1)
-            local func = caller[1]
-            table.remove(caller, 1)
-            table.insert(caller, next)
-            func(unpack(caller))
-        end
-    end
-    next()
-end
-
-function async.next( n )
-    if n then n() end
-end
 
 function async.waterfall(tasks, cb)
     local nextArg = {}
-
-    for i, v in pairs(tasks) do
-        local error = nil
+    local next
+    local error
+    next = function()
+        if #tasks == 0 then 
+            cb(error, unpack(nextArg))
+            return 
+        end
+        local err = nil
+        local v = tasks[1]
+        table.remove(tasks, 1)
         v(function(err, ...)
             local arg = {...}
-            nextArg = arg;
+            nextArg = arg
             if err then
                 error = err
             end
+            next()
         end, unpack(nextArg))
-        if error then return cb(error) end
+        if error then 
+            tasks = {} -- 清空序列
+            return cb(error, nil)
+        end
     end
-    cb(nil, unpack(nextArg))
+    next()
 end
 
 
