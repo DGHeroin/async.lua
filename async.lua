@@ -2,6 +2,7 @@
 -- Blake@github.com/DGHeroin/async.lua
 
 local async = {}
+local unpack = unpack or table.unpack
 function async.call( ... )
     local async_context = {}
     local objs = {...}
@@ -13,7 +14,7 @@ function async.call( ... )
             local func = caller[1]
             table.remove(caller, 1)
             table.insert(caller, next)
-            func(table.unpack(caller))
+            func(unpack(caller))
         end
     end
     next()
