@@ -1,3 +1,6 @@
+-- MIT License
+-- Blake@github.com/DGHeroin/async.lua
+
 local async = {}
 function async.call( ... )
     local async_context = {}
