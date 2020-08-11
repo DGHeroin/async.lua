@@ -5,33 +5,6 @@
 
 You can use async.lua to manage your callback functions, avoid sinking in callback hell, and reduce mental burden.
 
-# async.call
-### 构建一个调用序列 (make a call sequence)
-```
-async.call(
-  {
-    function(name, next)
-      print(name)
-      next()
-    end, 
-    'my name'
-  }, 
-  {
-    function(address, phone, next)
-      print(address, phone)
-      next()
-    end, 
-    'shenzhen china', '123456'
-  }, 
-)
-```
-
-### next 参数 (the next parameter)
-
-next总是为最后一个参数, 这样不会破坏你原有的函数设计, 只需要在适合的时机调用async.next(next)
-
-next is always the last parameter, so it will not affect your original function design, only need to call async.next(next) at the right time
-
 ## async.waterfall
 
 和你知道的waterfall一样
