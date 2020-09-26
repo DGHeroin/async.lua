@@ -10,7 +10,10 @@ function async.waterfall(tasks, cb)
     local error
     next = function()
         if #tasks == 0 then 
-            cb(error, unpack(nextArg))
+            if resultCb then
+                resultCb(error, unpack(nextArg))
+            end
+            resultCb = nil
             return 
         end
         local err = nil
