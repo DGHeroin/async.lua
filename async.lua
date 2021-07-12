@@ -37,4 +37,33 @@ function async.waterfall(tasks, resultCb)
     next()
 end
 
+function async.parallel(tasks, resultCb)
+    local count = 0
+    local result = {}
+    resultCb = resultCb or function () end
+    local function invokeFinal(err)
+        if not resultCb then return end
+        resultCb(err, result)
+        resultCb = nil
+    end
+    local function invoke(i, task)
+        task(function (err, ...)
+            count = count + 1
+            local args  = {...}
+            result[i] = args
+            if err then -- 终止
+                invokeFinal(err)
+                return
+            end
+            if count == #tasks then
+                invokeFinal()
+            end
+        end)
+    end
+    for index, value in ipairs(tasks) do
+        invoke(index, value)
+    end
+end
+
+
 return async
