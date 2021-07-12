@@ -8,6 +8,7 @@ function async.waterfall(tasks, resultCb)
     local nextArg = {}
     local next
     local error
+    resultCb = resultCb or function () end
 
     next = function()
         if #tasks == 0 then
@@ -18,8 +19,8 @@ function async.waterfall(tasks, resultCb)
             return
         end
         if error then
-            tasks = {}
-            resultCb(error, nil)
+            tasks = {} -- 清空序列
+            resultCb(error, unpack(nextArg))
             return
         end
         local err = nil
