@@ -36,8 +36,12 @@ function async.waterfall(tasks, resultCb)
     end
     next()
 end
-
-function async.parallel(tasks, resultCb)
+local DEFAULT_MAX_PARALLEL_NUM = 5
+function async.parallel(MAX_PARALLEL_NUM, tasks, resultCb)
+    if type(MAX_PARALLEL_NUM) ~= 'number' then
+        async.parallel(DEFAULT_MAX_PARALLEL_NUM, MAX_PARALLEL_NUM, tasks)
+        return
+    end
     local count = 0
     local result = {}
     resultCb = resultCb or function () end
@@ -60,8 +64,33 @@ function async.parallel(tasks, resultCb)
             end
         end)
     end
-    for index, value in ipairs(tasks) do
-        invoke(index, value)
+    if #tasks <= MAX_PARALLEL_NUM then
+        for index, value in ipairs(tasks) do
+            invoke(index, value)
+        end
+    else -- 并行处理太多了
+        -- 拆分任务组
+        local groupTasks = {}
+        local groupIdx = 1
+        for _, value in ipairs(tasks) do
+            local m = groupTasks[groupIdx] or {}
+            groupTasks[groupIdx] = m
+            table.insert(m, value)
+            if #m >= MAX_PARALLEL_NUM then
+                groupIdx = groupIdx + 1
+            end
+        end
+        -- 按组顺序执行
+        local fns = {}
+        local function makeFunc(smallTasks)
+            return function (next)
+                async.parallel(smallTasks, next)
+            end
+        end
+        for _, value in ipairs(groupTasks) do
+            table.insert(fns, makeFunc(value))
+        end
+        async.waterfall(fns, invokeFinal)
     end
 end
 
