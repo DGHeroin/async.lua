@@ -3,7 +3,11 @@
 
 local async = {}
 local unpack = unpack or table.unpack
+local DEFAULT_MAX_PARALLEL_NUM = 5
 
+-- @luadoc 瀑布流执行
+-- @params tasks    array    函数数组
+-- @params resultCb functino 最终回调
 function async.waterfall(tasks, resultCb)
     local nextArg = {}
     local next
@@ -36,7 +40,11 @@ function async.waterfall(tasks, resultCb)
     end
     next()
 end
-local DEFAULT_MAX_PARALLEL_NUM = 5
+
+-- @luadoc 并行执行
+-- @params num      number|nil 并行调用数量 默认5
+-- @params tasks    array      函数数组
+-- @params resultCb functino   最终回调
 function async.parallel(MAX_PARALLEL_NUM, tasks, resultCb)
     if type(MAX_PARALLEL_NUM) ~= 'number' then
         async.parallel(DEFAULT_MAX_PARALLEL_NUM, MAX_PARALLEL_NUM, tasks)
